@@ -1,0 +1,65 @@
+# compiled output
+/dist/
+/tmp/
+/out-tsc/
+/build/
+
+# dependencies
+/node_modules/
+
+# Nx
+.nx/cache
+.nx/workspace-data
+
+# Angular
+.angular
+.cache/
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log*
+yarn-error.log*
+testem.log
+/typings
+
+# logs
+*.log
+
+# env
+.env
+.env.*
+!.env.example
+
+# AI / agents (opcional)
+.claude/worktrees
+.claude/settings.local.json
+.ai/
+agents/
+generated/
+*.generated.*
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# testing
+vitest.config.*.timestamp*

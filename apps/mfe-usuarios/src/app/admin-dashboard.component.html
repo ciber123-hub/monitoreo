@@ -1,0 +1,84 @@
+<div class="dashboard">
+  <div class="card card-admin">
+
+    <div class="admin-header">
+      <h1 class="admin-title">Administración</h1>
+    </div>
+
+    <div class="admin-section">
+      <div class="section-title">Usuario de Active Directory</div>
+
+      <div class="user-input-group">
+        <input
+          type="text"
+          class="user-input"
+          
+          [(ngModel)]="newUserSearch"
+          (keyup.enter)="onAddUser()"
+        />
+
+        <button class="btn-add" (click)="onAddUser()">
+          +
+        </button>
+      </div>
+
+      <div class="users-table-wrapper">
+        <table class="users-table">
+
+    <thead>
+      <tr>
+        <th>Usuario</th>
+        <th>Perfil</th>
+        <th>Estado</th>
+        <th class="actions-col">Acciones</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let user of usersList()" [class.inactive]="!user.activo">
+
+        <td class="user-cell">
+          <div class="user-info">
+            <div class="avatar">
+              {{ user.usuario.charAt(0).toUpperCase() }}
+            </div>
+            <span>{{ user.usuario }}</span>
+          </div>
+        </td>
+
+        <td>
+          <select class="profile-select"
+                  [(ngModel)]="user.perfil"
+                  (change)="onUpdateUserProfile(user)">
+            <option value="Soporte">Soporte</option>
+            <option value="Admin">Admin</option>
+            
+          </select>
+        </td>
+
+        <td>
+          <span class="status" [class.active]="user.activo" [class.inactive-status]="!user.activo">
+            <span class="dot"></span>
+            {{ user.activo ? 'Activo' : 'Inactivo' }}
+          </span>
+        </td>
+
+        <td class="actions">
+          <button class="btn-delete" (click)="onDeleteUser(user)">
+            🗑
+          </button>
+        </td>
+
+      </tr>
+    </tbody>
+
+  </table>
+
+        <div *ngIf="usersList().length === 0" class="no-data">
+          No hay usuarios registrados
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

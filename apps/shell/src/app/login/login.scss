@@ -1,0 +1,266 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+    padding-bottom: 8vh;
+  background: linear-gradient(135deg, #611232 0%, #7f1d6f 100%);
+  
+}
+
+.logo-outside-card {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -2rem;
+  gap: 0.5rem;
+}
+
+
+
+.logo-img {
+  width: 160px;
+  height: auto;
+}
+
+.logo-img-fnpte {
+  width: 240px;
+  height: auto;
+}
+
+
+
+
+.logo-outside-card h1 {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.05em;
+}
+
+.login-card {
+  background: #ffffff;
+  padding: 2.5rem 2rem 2rem;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 380px;
+  border: 1px solid rgba(203, 214, 232, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.login-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #611232, #7f1d6f);
+}
+
+.logo-section {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-card h2 {
+  color: #0c3d89;
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: 0.025em;
+  margin: 0;
+}
+
+form {
+  width: 100%;
+}
+
+.field {
+  margin-bottom: 1.5rem;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #2a3f60;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.field input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e1e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #1f3354;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: #611232;
+  box-shadow: 0 0 0 3px rgba(97, 24, 84, 0.1);
+}
+
+.field input::placeholder {
+  color: #94a3b8;
+}
+
+.field input.ng-invalid.ng-touched {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.field input.ng-valid.ng-touched {
+  border-color: #10b981;
+}
+
+.field-error {
+  margin-top: 0.25rem;
+}
+
+.field-error small {
+  color: #ef4444;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: color 0.2s ease;
+  font-size: 1.125rem;
+}
+
+.password-toggle:hover {
+  color: #611232;
+}
+
+.btn-container {
+  margin-top: 2rem;
+}
+
+.p-button {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #611232 0%, #7f1d6f 100%);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  box-shadow: 0 4px 12px rgba(97, 24, 84, 0.3);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.p-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.p-button:hover::before {
+  left: 100%;
+}
+
+.p-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(97, 24, 84, 0.4);
+}
+
+.p-button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(97, 24, 84, 0.3);
+}
+
+.p-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  background: #94a3b8 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.error-message {
+  color: #ef4444;
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem;
+  background: #fef2f2;
+  border-radius: 6px;
+  border: 1px solid #fecaca;
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    padding: 0.5rem;
+  }
+
+  .login-card {
+    padding: 2rem 1.5rem 1.5rem;
+    margin: 0;
+  }
+
+  .logo-outside-card h1 {
+    font-size: 1.25rem;
+  }
+
+  .field input {
+    padding: 0.75rem 0.875rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-card {
+    max-width: 100%;
+  }
+}
+
+// Remove conflicting styles
+.p-button {
+  background: linear-gradient(135deg, #611232 0%, #7f1d6f 100%) !important;
+}
+
+// Clean up PrimeNG overrides
+:host ::ng-deep .p-password {
+  width: 100%;
+}
+
+:host ::ng-deep .p-password .p-inputtext {
+  width: 100%;
+}
+
+:host ::ng-deep .p-password .p-password-toggle-mask {
+  display: none; /* Hide default PrimeNG toggle since we have custom one */
+}
+

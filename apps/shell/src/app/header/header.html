@@ -1,0 +1,38 @@
+
+    <header class="header">
+      <div class="header-content">
+        <div class="logo-section">
+          <img src="https://framework-gb.cdn.gob.mx/gobmx/img/logo_blanco.svg" alt="Gobierno de México" class="logo-img">
+          <!--<img src="assets/images/logo-gobdemex-blanco.png" alt="FNPTE" class="logo-img">-->
+          <img src="assets/images/LOGO-FNPTE.png" alt="FNPTE" class="logo-img-fnpte">
+        </div>
+        
+        <button class="menu-toggle" (click)="toggleMenu()" [class.active]="menuOpen()" title="Alternar menú">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+      
+
+        <nav class="nav" [class.open]="menuOpen()">
+          <ul>
+            <li><a href="/" (click)="closeMenu()">Inicio</a></li>
+            <li><a href="/admin" (click)="closeMenu()">Monitoreo</a></li>
+            <li><a href="/dashboard" (click)="closeMenu()">Usuarios</a></li>
+          </ul>
+        </nav>
+
+
+        <div class="actions">
+        <span class="user-email">{{ currentUser?.mail }}</span>
+          <div>
+            
+            <button class="logout-btn" (click)="logout()">
+              <i class="pi pi-sign-out"></i>
+              <span class="logout-text">Salir</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>

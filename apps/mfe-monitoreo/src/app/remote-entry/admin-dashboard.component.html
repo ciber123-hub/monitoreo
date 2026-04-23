@@ -1,0 +1,123 @@
+<div class="dashboard">
+  <!-- CARD FILTROS -->
+  <div class="card card-filters">
+    
+    
+     <form [formGroup]="filterForm" class="filters-form">
+      <div class="filters-centered-row">
+        <!-- FECHAS Y ESTADO (juntos) -->
+        <div class="filters-fechas-estado-group">
+          <!-- FECHAS -->
+<div class="filter-row-fechas-inline">
+
+  <div class="fecha-inline-item">
+    <label>Desde:</label>
+    <p-datepicker
+      #dpDesde
+      formControlName="fechaDesde"
+      [showIcon]="true"
+      iconDisplay="input"
+      placeholder="dd/mm/aaaa"
+      [appendTo]="null"
+      (onShow)="onOpenDesde()">
+    </p-datepicker>
+  </div>
+
+  <div class="fecha-inline-item">
+    <label>Hasta:</label>
+    <p-datepicker
+      #dpHasta
+      formControlName="fechaHasta"
+      [showIcon]="true"
+      iconDisplay="input"
+      placeholder="dd/mm/aaaa"
+      [appendTo]="null"
+      (onShow)="onOpenHasta()">
+    </p-datepicker>
+  </div>
+
+</div>
+
+          <!-- ESTADO -->
+          <div class="filter-group filter-group-estado">
+            <span class="section-title">Estado</span>
+            <div formArrayName="estados" class="checkbox-group-vertical">
+              <div class="checkbox-item" *ngFor="let e of estadosList; let i = index">
+                <p-checkbox [formControlName]="i" [binary]="true"></p-checkbox>
+                <label>{{ e.label }}</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ARCHIVOS (separado) -->
+        <div class="filter-group filter-group-archivos">
+          <span class="section-title">Archivos</span>
+          <div formArrayName="archivos" class="checkbox-group-vertical">
+            <div class="checkbox-item" *ngFor="let a of archivosList; let i = index">
+              <p-checkbox [formControlName]="i" [binary]="true"></p-checkbox>
+              <label>{{ a }}</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button pButton type="button" label="Buscar" icon="pi pi-search" class="p-button-primary" (click)="onSearch()" [loading]="isLoading()"></button>
+        <button pButton type="button" label="Limpiar" icon="pi pi-times" class="p-button-secondary" (click)="onClear()"></button>
+      </div>
+    </form>
+  </div>
+
+  <!-- CARD TABLA -->
+  <div class="card card-table">
+    <div class="card-header">
+      <button pButton type="button" icon="pi pi-file-excel" class="p-button-success p-button-sm" pTooltip="Exportar a Excel" tooltipPosition="top" (click)="exportToExcel()"></button>
+    </div>
+    
+    <p-table 
+      [value]="filteredData()" 
+      [paginator]="true" 
+      [rows]="5" 
+      [rowsPerPageOptions]="[5, 10, 20]"
+      [tableStyle]="{ 'min-width': '50rem' }"
+      responsiveLayout="scroll"
+      styleClass="p-datatable-sm p-datatable-striped">
+      
+      <ng-template #header>
+        <tr>
+          <th pSortableColumn="fechaHora">Fecha/Hora <p-sortIcon field="fechaHora"></p-sortIcon></th>
+          <th pSortableColumn="archivo">Archivo <p-sortIcon field="archivo"></p-sortIcon></th>
+          <th pSortableColumn="estado">Estado <p-sortIcon field="estado"></p-sortIcon></th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template #body let-report>
+        <tr>
+          <td>{{ report.fechaHora }}</td>
+          <td><span class="font-bold">{{ report.archivo }}</span></td>
+          <td>
+            <div class="estado-cell">
+              <span class="traffic-light" [ngClass]="'traffic-' + report.estado"></span>
+              <p-tag [value]="getEstadoLabel(report)" severity="secondary"></p-tag>
+            </div>
+          </td>
+          <td>
+            <div class="acciones-cell">
+              <button type="button" class="btn-accion btn-detalle" pTooltip="Ver detalle" tooltipPosition="top" (click)="showDetailModal(report)">
+                <i class="pi pi-eye"></i>
+              </button>
+              <button *ngIf="report.estado === 'errorEnviar'" type="button" class="btn-accion btn-reenviar" pTooltip="Reenviar" tooltipPosition="top">
+                <i class="pi pi-send"></i>
+              </button>
+              <button *ngIf="report.estado === 'errorGenerar'" type="button" class="btn-accion btn-regenerar" pTooltip="Regenerar" tooltipPosition="top">
+                <i class="pi pi-refresh"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

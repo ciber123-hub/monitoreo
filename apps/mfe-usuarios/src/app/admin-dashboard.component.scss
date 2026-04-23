@@ -1,0 +1,230 @@
+:host {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 1.5rem;
+  background: #f8fafc;
+}
+
+.dashboard {
+  max-width: 1000px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* CARD */
+.card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* HEADER */
+.admin-header {
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+}
+
+.admin-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* =========================
+   INPUT (MÁS PEQUEÑO)
+========================= */
+.user-input-group {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.user-input {
+  flex: 1;
+  padding: 0.5rem 0.75rem; /* 👈 más pequeño */
+  font-size: 0.9rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  transition: 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: #0f766e;
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+  }
+}
+
+.btn-add {
+  background: #0f766e;
+  color: white;
+  border: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    background: #0d5d56;
+    transform: translateY(-1px);
+  }
+}
+
+/* =========================
+   TABLE WRAPPER
+========================= */
+.users-table-wrapper {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+/* HEADER MÁS TENUE */
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.25rem;
+  background: #f1f5f9; /* 👈 más tenue */
+  border-bottom: 1px solid #e2e8f0;
+
+  h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #334155; /* menos fuerte */
+  }
+
+  .count {
+    font-size: 0.8rem;
+    color: #64748b;
+    background: #e2e8f0;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+  }
+}
+
+/* TABLE */
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+
+  thead {
+    background: #e2e8f0;
+
+    th {
+      color: #334155;
+      text-align: left;
+      padding: 0.8rem 1rem;
+      font-weight: 600;
+      font-size: 0.8rem;
+      letter-spacing: 0.3px;
+    }
+  }
+
+  tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+    transition: 0.2s;
+
+    &:hover {
+      background: #f8fafc;
+    }
+
+    &.inactive {
+      opacity: 0.6;
+    }
+
+    td {
+      padding: 0.8rem 1rem;
+      color: #334155;
+      vertical-align: middle;
+    }
+  }
+}
+
+/* =========================
+   ❌ AVATAR ELIMINADO (YA NO HAY CÍRCULO)
+========================= */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0; /* sin espacio de avatar */
+}
+
+/* SELECT */
+.profile-select {
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: #0f766e;
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+  }
+}
+
+/* STATUS */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+}
+
+.status.active {
+  color: #047857;
+
+  .dot {
+    background: #10b981;
+  }
+}
+
+.inactive-status {
+  color: #b91c1c;
+
+  .dot {
+    background: #ef4444;
+  }
+}
+
+/* DELETE */
+.btn-delete {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    background: #fecaca;
+    transform: scale(1.05);
+  }
+}
+
+/* EMPTY */
+.no-data {
+  text-align: center;
+  padding: 2rem;
+  color: #94a3b8;
+}

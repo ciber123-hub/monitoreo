@@ -1,0 +1,33 @@
+@import 'primeicons/primeicons.css';
+@import "primeng/resources/themes/lara-light-blue/theme.css";
+@import "primeng/resources/primeng.min.css";
+
+/* Estilos globales para iconos PrimeIcons */
+.pi {
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 1rem;
+  line-height: 1;
+  font-family: PrimeIcons;
+  font-weight: 400;
+}
+
+/* Estilos para botones con solo iconos */
+button.p-button-text .pi {
+  color: inherit;
+  font-size: 1rem;
+}
+
+/* Estilos para span que envuelve iconos en PrimeNG */
+span.p-button-icon {
+  display: inline-block !important;
+  width: auto !important;
+  height: auto !important;
+  color: inherit !important;
+}
+
+span.p-button-icon.p-icon {
+  display: inline-block !important;
+}
+
+/* You can add global styles to this file, and also import other style files */

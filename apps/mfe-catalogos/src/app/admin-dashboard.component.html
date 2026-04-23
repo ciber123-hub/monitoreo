@@ -1,0 +1,96 @@
+<div class="dashboard">
+  <!-- CARD CARGA DE ARCHIVO -->
+  <div class="card card-upload">
+   
+    <div class="upload-container">
+      <div class="upload-content">
+        <div class="upload-section-title">Actualización de Catálogos</div>
+        <div class="upload-instructions">Instrucciones: Elije un catálogo de la lista y arrastra un archivo CSV o Excel para actualizar su información.</div>
+
+        <!-- Selector de catálogo -->
+        <div class="catalog-selector-group">
+          <select 
+            id="catalogSelect"
+            [(ngModel)]="selectedCatalog"
+            class="catalog-select">
+            <option [value]="null">Lista de catálogos</option>
+            <option *ngFor="let catalog of catalogosList" [value]="catalog.id">
+              {{ catalog.name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Zona de drag and drop -->
+        <div 
+          class="drop-zone" 
+          [class.active]="isDragOver()"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+          (click)="fileInput.click()">
+          <div class="drop-zone-content">
+            <div class="drop-zone-icon">↓</div>
+            <div class="drop-zone-text">
+              <div class="drop-zone-main">Arrastra tu archivo aquí</div>
+              <div class="drop-zone-sub">o haz clic para seleccionar</div>
+            </div>
+            <div class="drop-zone-formats">Formatos permitidos: .csv, .xlsx</div>
+          </div>
+          <input 
+            #fileInput
+            type="file" 
+            hidden 
+            accept=".csv,.xlsx"
+            (change)="onFileSelected($event)"
+            (click)="$event.stopPropagation()">
+        </div>
+
+        <!-- Archivo seleccionado -->
+        <div *ngIf="selectedFile()" class="selected-file">
+          <span class="file-label">Archivo seleccionado:</span>
+          <span class="file-name">{{ selectedFile()?.name }}</span>
+        </div>
+
+        <!-- Acciones -->
+        <div class="upload-actions">
+          <button 
+            pButton 
+            type="button" 
+            label="Cargar archivo" 
+            icon="pi pi-upload"
+            class="p-button-primary upload-btn"
+            [loading]="isLoading()"
+            [disabled]="!selectedFile() || !selectedCatalog()"
+            (click)="onUploadFile()">
+          </button>
+          <button 
+            pButton 
+            type="button" 
+            label="Cancelar" 
+            icon="pi pi-times"
+            class="p-button-secondary cancel-btn"
+            (click)="onCancel()">
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD FILTROS -->
+  <div class="card card-filters">
+  
+  <!-- CARD TABLA -->
+  <div class="card card-table">
+    <div class="card-header">
+      <h2 class="card-title">Estado de carga</h2>
+    </div>
+  </div>
+
+  <!-- CARD TABLA -->
+  <div class="card card-table">
+    <div class="card-header">
+      <h2 class="card-title">Resultado</h2>
+    </div>
+  </div>
+
+</div>

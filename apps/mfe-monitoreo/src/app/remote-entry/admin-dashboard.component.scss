@@ -370,3 +370,77 @@
     width: 100%;
   }
 }
+
+
+.btn-detalle {
+    color: #0ea5e9;
+
+    i {
+      color: #0ea5e9;
+    }
+
+    &:hover {
+      background: #e0f2fe;
+      border-color: #0ea5e9;
+    }
+  }
+
+
+   /* Estilos personalizados para botones de acción */
+  .btn-accion {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    border: 1px #e2e8f0;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    font-size: 0;
+
+    i {
+      font-size: 1.1rem;
+      display: inline-block;
+      line-height: 1;
+    }
+
+    &:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      transform: scale(1.1);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+
+
+   .btn-reenviar {
+    color: #f59e0b;
+
+    i {
+      color: #f59e0b;
+    }
+
+    &:hover {
+      background: #fffbeb;
+      border-color: #f59e0b;
+    }
+  }
+
+  .btn-regenerar {
+    color: #10b981;
+
+    i {
+      color: #10b981;
+    }
+
+    &:hover {
+      background: #ecfdf5;
+      border-color: #10b981;
+    }
+  }

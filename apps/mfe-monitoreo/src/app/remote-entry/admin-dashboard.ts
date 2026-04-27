@@ -526,8 +526,8 @@ export class AdminDashboard implements OnInit {
    */
   onResend(report: ReportData): void {
     Swal.fire({
-      title: 'Reenviar Reporte',
-      text: `¿Deseas reenviar el reporte ID ${report.id}?`,
+      title: 'Reenviar Archivo',
+      text: `¿Esta seguro que desea reenviar el archivo ${report.archivo}?`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí, reenviar',
@@ -538,7 +538,7 @@ export class AdminDashboard implements OnInit {
         Swal.fire({
           icon: 'success',
           title: 'Reenviado',
-          text: 'El reporte ha sido reenviado exitosamente',
+          text: 'El archivo ha sido reenviado exitosamente',
           timer: 2000
         });
       }
@@ -550,8 +550,8 @@ export class AdminDashboard implements OnInit {
    */
   onRegenerate(report: ReportData): void {
     Swal.fire({
-      title: 'Regenerar Reporte',
-      text: `¿Deseas regenerar el reporte ID ${report.id}?`,
+      title: 'Regenerar Archivo',
+      text: `¿Esta seguro que desea regenerar el archivo ${report.archivo}?`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí, regenerar',
@@ -562,7 +562,7 @@ export class AdminDashboard implements OnInit {
         Swal.fire({
           icon: 'success',
           title: 'Regenerado',
-          text: 'El reporte ha sido regenerado exitosamente',
+          text: 'El archivo ha sido regenerado exitosamente',
           timer: 2000
         });
       }

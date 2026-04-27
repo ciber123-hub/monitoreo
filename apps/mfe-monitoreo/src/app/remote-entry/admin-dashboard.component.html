@@ -108,14 +108,18 @@
               <button type="button" class="btn-accion btn-detalle" pTooltip="Ver detalle" tooltipPosition="top" (click)="showDetailModal(report)">
                 <i class="pi pi-eye"></i>
               </button>
-              <button *ngIf="report.estado === 'errorEnviar'" type="button" class="btn-accion btn-reenviar" pTooltip="Reenviar" tooltipPosition="top">
+              <button *ngIf="report.backendStatusDescription === 'ERROR AL ENVIAR'" type="button" class="btn-accion btn-reenviar" pTooltip="Reenviar" tooltipPosition="top" (click)="onResend(report)">
                 <i class="pi pi-send"></i>
               </button>
-              <button *ngIf="report.estado === 'errorGenerar'" type="button" class="btn-accion btn-regenerar" pTooltip="Regenerar" tooltipPosition="top">
+              <button *ngIf="report.backendStatusDescription === 'ERROR AL REGENERAR'" type="button" class="btn-accion btn-regenerar" pTooltip="Regenerar" tooltipPosition="top" (click)="onRegenerate(report)">
                 <i class="pi pi-refresh"></i>
               </button>
             </div>
           </td>
+
+
+
+          
         </tr>
       </ng-template>
     </p-table>

@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormArray, FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 
@@ -17,14 +18,10 @@ import { PrimeNG } from 'primeng/config';
 // Modelos y Servicios
 import { ReportData, EstadoConfig, FiltroRequest } from './remote-entry/models/report.model';
 import { ReportService } from './remote-entry/services/report.service';
+import { Catalog, CargaCatalogoResponse } from './models/catalog.model';
+import { CatalogService } from './services/catalog.service';
 
 type TagSeverity = "success" | "info" | "warn" | "danger" | "secondary" | "contrast" | undefined;
-
-// Interfaz para Catálogos
-interface Catalog {
-  id: string;
-  name: string;
-}
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -33,6 +30,7 @@ interface Catalog {
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
+    HttpClientModule,
     CardModule,
     CheckboxModule,
     ButtonModule,
@@ -64,20 +62,18 @@ export class AdminDashboard implements OnInit {
   // Upload signals
   selectedFile = signal<File | null>(null);
   isDragOver = signal<boolean>(false);
-  selectedCatalog = signal<string | null>(null);
+  selectedCatalog: string | null = null;
 
-  // Datos dummy de catálogos
-  catalogosList: Catalog[] = [
-    { id: 'claves_moneda', name: 'Claves de Moneda' },
-    { id: 'paises', name: 'Países' },
-    { id: 'estatus', name: 'Estatus' },
-    { id: 'tipos_usuario', name: 'Tipos de Usuario' },
-    { id: 'departamentos', name: 'Departamentos' }
-  ];
+  // Datos de respuesta del servicio
+  uploadResponse = signal<CargaCatalogoResponse | null>(null);
+
+  // Catálogos cargados desde backend
+  catalogosList: Catalog[] = []; 
 
   constructor(
     private fb: FormBuilder,
     private reportService: ReportService,
+    private catalogService: CatalogService,
     private primeng: PrimeNG
   ) {
     this.estadosList = this.reportService.obtenerEstadoConfig();
@@ -87,6 +83,7 @@ export class AdminDashboard implements OnInit {
 
   ngOnInit(): void {
     this._configurarIdioma();
+    this._cargarCatalogos();
     this._cargarDatos();
   }
 
@@ -121,6 +118,20 @@ export class AdminDashboard implements OnInit {
       error: (error) => {
         console.error('Error al cargar datos:', error);
         this.isLoading.set(false);
+      }
+    });
+  }
+
+  /**
+   * Carga los catálogos desde el backend
+   */
+  private _cargarCatalogos(): void {
+    this.catalogService.obtenerCatalogosTipos().subscribe({
+      next: (catalogos) => {
+        this.catalogosList = catalogos;
+      },
+      error: (error) => {
+        console.error('Error al cargar catálogos:', error);
       }
     });
   }
@@ -521,7 +532,10 @@ export class AdminDashboard implements OnInit {
 
     const files = event.dataTransfer?.files;
     if (files && files.length > 0) {
-      this._processFile(files[0]);
+      const accepted = this._processFile(files[0]);
+      if (accepted && this.selectedCatalog) {
+        this.onUploadFile();
+      }
     }
   }
 
@@ -535,7 +549,7 @@ export class AdminDashboard implements OnInit {
   /**
    * Procesa el archivo seleccionado
    */
-  private _processFile(file: File): void {
+  private _processFile(file: File): boolean {
     // Validar extensión
     const validExtensions = ['csv', 'xlsx'];
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
@@ -547,7 +561,7 @@ export class AdminDashboard implements OnInit {
         text: 'Solo se permiten archivos CSV o XLSX. Por favor selecciona un archivo válido.',
         confirmButtonColor: '#ef4444'
       });
-      return;
+      return false;
     }
 
     // Validar tamaño (máximo 10MB)
@@ -559,10 +573,11 @@ export class AdminDashboard implements OnInit {
         text: 'El archivo no puede exceder 10MB. Por favor selecciona un archivo más pequeño.',
         confirmButtonColor: '#ef4444'
       });
-      return;
+      return false;
     }
 
     this.selectedFile.set(file);
+    return true;
   }
 
   /**
@@ -573,10 +588,10 @@ export class AdminDashboard implements OnInit {
   }
 
   /**
-   * Carga el archivo seleccionado
+   * Carga el archivo seleccionado al backend
    */
   onUploadFile(): void {
-    if (!this.selectedFile() || !this.selectedCatalog()) {
+    if (!this.selectedFile() || !this.selectedCatalog) {
       Swal.fire({
         icon: 'warning',
         title: 'Campos requeridos',
@@ -587,47 +602,91 @@ export class AdminDashboard implements OnInit {
     }
 
     this.isLoading.set(true);
+    const file = this.selectedFile() as File;
+    const catalogId = this.selectedCatalog as string;
 
-    // Simular envío de archivo
-    setTimeout(() => {
-      this.isLoading.set(false);
+    this.catalogService.cargarCatalogo(catalogId, file).subscribe({
+      next: (response: CargaCatalogoResponse) => {
+        this.isLoading.set(false);
+        
+        // Almacenar la respuesta completa
+        this.uploadResponse.set(response);
 
-      // Seleccionar catálogo para mostrar en el mensaje
-      const catalog = this.catalogosList.find(c => c.id === this.selectedCatalog());
-      const catalogName = catalog?.name || 'Catálogo';
+        const catalog = this.catalogosList.find(c => c.id === catalogId);
+        const catalogName = catalog?.name || 'Catálogo';
 
-      // Simular diferentes respuestas (éxito o error)
-      const randomSuccess = Math.random() > 0.2; // 80% de éxito
+        // Verificar si todos los estados son exitosos
+        const allSuccessful = 
+          response.archivoValidado.estatus === 'Exitoso' &&
+          response.procesando.estatus === 'Exitoso' &&
+          response.actualizando.estatus === 'Exitoso' &&
+          response.finalizado.estatus === 'Exitoso';
 
-      if (randomSuccess) {
+        const title = allSuccessful ? 'Carga exitosa' : 'Carga con advertencias';
+        const icon = allSuccessful ? 'success' : 'warning';
+
         Swal.fire({
-          icon: 'success',
-          title: 'Actualización exitosa',
-          html: `<p>El archivo <strong>${this.selectedFile()?.name}</strong> ha sido procesado correctamente.</p>
-                 <p>Se han actualizado <strong>1,245</strong> registros en el catálogo de <strong>${catalogName}</strong>.</p>
-                 <p style="color: #64748b; font-size: 0.875rem; margin-top: 1rem;">La actualización se completó en <strong>2.5 segundos</strong>.</p>`,
+          icon: icon as any,
+          title: title,
+          text: `El archivo se ha procesado en ${catalogName}.`,
           confirmButtonText: 'Aceptar',
-          confirmButtonColor: '#10b981'
+          confirmButtonColor: allSuccessful ? '#10b981' : '#f59e0b'
         }).then(() => {
           this._resetUploadForm();
         });
-      } else {
+      },
+      error: (error) => {
+        this.isLoading.set(false);
+        const message = error?.error?.message || error?.message || 'Ocurrió un error al cargar el archivo.';
         Swal.fire({
           icon: 'error',
-          title: 'Error en la actualización',
-          html: `<p>Hubo un problema al procesar el archivo <strong>${this.selectedFile()?.name}</strong>.</p>
-                 <p>Detalles del error: El archivo contiene registros duplicados que no pueden ser importados.</p>
-                 <p style="color: #64748b; font-size: 0.875rem; margin-top: 1rem;">Por favor, revisa el archivo y vuelve a intentarlo.</p>`,
+          title: 'Error en la carga',
+          html: `<p>${message}</p>`,
           confirmButtonText: 'Aceptar',
           confirmButtonColor: '#ef4444'
         });
       }
-    }, 1500);
+    });
   }
 
   /**
    * Cancela la carga de archivo
    */
+  getStatusIcon(status?: string): string {
+    if (!status) {
+      return '•';
+    }
+
+    const normalized = status.toLowerCase();
+    if (normalized.includes('exitoso') || normalized.includes('éxito')) {
+      return '✓';
+    }
+    if (normalized.includes('procesando') || normalized.includes('en proceso')) {
+      return '⌛';
+    }
+    if (normalized.includes('actualizando')) {
+      return '↻';
+    }
+    if (normalized.includes('finalizado')) {
+      return '✔';
+    }
+    if (normalized.includes('error') || normalized.includes('fallo')) {
+      return '⚠';
+    }
+
+    return '•';
+  }
+
+  getStatusText(step?: { estatus?: string; descripcionError?: string }): string {
+    if (!step || !step.estatus) {
+      return '';
+    }
+
+    return step.estatus === 'Error' && step.descripcionError
+      ? step.descripcionError
+      : step.estatus;
+  }
+
   onCancel(): void {
     Swal.fire({
       title: '¿Cancelar carga?',
@@ -655,7 +714,7 @@ export class AdminDashboard implements OnInit {
    */
   private _resetUploadForm(): void {
     this.selectedFile.set(null);
-    this.selectedCatalog.set(null);
+    this.selectedCatalog = null;
     if (this.fileInput) {
       this.fileInput.nativeElement.value = '';
     }

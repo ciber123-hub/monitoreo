@@ -468,14 +468,14 @@ export class AdminDashboard implements OnInit {
           container.appendChild(style);
         }
       },
-      showDenyButton: true,
-      showCancelButton: true,
+      /*showDenyButton: true,
+      showCancelButton: true,*/
       confirmButtonText: 'Descargar',
-      denyButtonText: 'Reenviar',
-      cancelButtonText: 'Regenerar',
+      /*denyButtonText: 'Reenviar',
+      cancelButtonText: 'Regenerar',*/
       confirmButtonColor: '#2563eb',
-      denyButtonColor: '#10b981',
-      cancelButtonColor: '#f59e0b'
+      /*denyButtonColor: '#10b981',
+      cancelButtonColor: '#f59e0b'*/
     }).then((result) => {
       if (result.isConfirmed) {
         this.onDownload(report);

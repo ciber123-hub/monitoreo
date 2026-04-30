@@ -60,7 +60,7 @@
             icon="pi pi-upload"
             class="p-button-primary upload-btn"
             [loading]="isLoading()"
-            [disabled]="!selectedFile() || !selectedCatalog()"
+            [disabled]="!selectedFile() || !selectedCatalog"
             (click)="onUploadFile()">
           </button>
           <button 
@@ -79,17 +79,74 @@
   <!-- CARD FILTROS -->
   <div class="card card-filters">
   
-  <!-- CARD TABLA -->
   <div class="card card-table">
-    <div class="card-header">
-      <h2 class="card-title">Estado de carga</h2>
+  <!-- HEADER (solo título) -->
+  <div class="card-header">
+    <h2 class="card-title">Estado de carga</h2>
+  </div>
+
+  <!-- CONTENIDO -->
+  <div class="card-body" *ngIf="uploadResponse()">
+    <div class="status-list">
+      <div class="status-step" [class.success]="uploadResponse()?.archivoValidado?.estatus === 'Exitoso'">
+        <span class="status-marker">{{ getStatusIcon(uploadResponse()?.archivoValidado?.estatus) }}</span>
+        <div class="status-content">
+          <span class="status-step-title">Archivo validado</span>
+          <span class="status-step-state">{{ getStatusText(uploadResponse()?.archivoValidado) }}</span>
+        </div>
+      </div>
+
+      <div class="status-step sub" [class.success]="uploadResponse()?.procesando?.estatus === 'Exitoso'">
+        <span class="status-marker">{{ getStatusIcon(uploadResponse()?.procesando?.estatus) }}</span>
+        <div class="status-content">
+          <span class="status-step-title">Procesando registros</span>
+          <span class="status-step-state">{{ getStatusText(uploadResponse()?.procesando) }}</span>
+        </div>
+      </div>
+
+      <div class="status-step sub" [class.success]="uploadResponse()?.actualizando?.estatus === 'Exitoso'">
+        <span class="status-marker">{{ getStatusIcon(uploadResponse()?.actualizando?.estatus) }}</span>
+        <div class="status-content">
+          <span class="status-step-title">Actualizando</span>
+          <span class="status-step-state">{{ getStatusText(uploadResponse()?.actualizando) }}</span>
+        </div>
+      </div>
+
+      <div class="status-step sub" [class.success]="uploadResponse()?.finalizado?.estatus === 'Exitoso'">
+        <span class="status-marker">{{ getStatusIcon(uploadResponse()?.finalizado?.estatus) }}</span>
+        <div class="status-content">
+          <span class="status-step-title">Finalizado</span>
+          <span class="status-step-state">{{ getStatusText(uploadResponse()?.finalizado) }}</span>
+        </div>
+      </div>
     </div>
   </div>
+</div>
 
   <!-- CARD TABLA -->
   <div class="card card-table">
+    <!-- HEADER (solo título) -->
     <div class="card-header">
       <h2 class="card-title">Resultado</h2>
+    </div>
+
+    <!-- CONTENIDO -->
+    <div class="card-body" *ngIf="uploadResponse()">
+      <div class="result-list">
+        <div class="result-item">
+          <div class="result-content">
+            <span class="result-item-title">Registros Insertados</span>
+          </div>
+          <span class="result-item-value">{{ uploadResponse()?.totales?.registrosAgregados }}</span>
+        </div>
+        <div class="result-item">
+          <div class="result-content">
+            <span class="result-item-title">Registros Actualizados</span>
+          </div>
+          <span class="result-item-value">{{ uploadResponse()?.totales?.registrosActualizados }}</span>
+        </div>
+       
+      </div>
     </div>
   </div>
 

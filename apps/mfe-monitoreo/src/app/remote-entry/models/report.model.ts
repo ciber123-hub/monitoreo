@@ -179,3 +179,13 @@ export interface RegistroArchivo {
     mensaje: string;            // Descripción del evento
   }>;
 }
+
+/**
+ * Modelo para datos del dashboard
+ */
+export interface DashboardData {
+  total: number;
+  numeroErrores: number;
+  numeroRegenerados: number;
+  numeroReenviados: number;
+}

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ReportData, FiltroRequest, FiltroResponse, EstadoConfig, ESTADO_CONFIG, TipoArchivo, ConsultaArchivosRequest, ConsultaArchivosResponse, RegistroArchivo, ESTATUS_MAP, TIPO_ARCHIVO_MAP, TIPO_ARCHIVO_MAP_INVERSO, ESTATUS_BACKEND_MAP } from '../models/report.model';
+import { ReportData, FiltroRequest, FiltroResponse, EstadoConfig, ESTADO_CONFIG, TipoArchivo, ConsultaArchivosRequest, ConsultaArchivosResponse, RegistroArchivo, ESTATUS_MAP, TIPO_ARCHIVO_MAP, TIPO_ARCHIVO_MAP_INVERSO, ESTATUS_BACKEND_MAP, DashboardData } from '../models/report.model';
 import { delay, of, map, catchError } from 'rxjs';
 
 @Injectable({
@@ -364,5 +364,15 @@ export class ReportService {
         minute: '2-digit'
       }).replace(',', '');
     }
+  }
+
+  /**
+   * Consulta datos del dashboard desde el backend
+   * GET /api/v1/inversiones/operaciones/archivos/dashboards/consulta
+   * 
+   * @returns Observable con datos del dashboard
+   */
+  consultarDashboard() {
+    return this.http.get<DashboardData>(`${this.API_BASE_URL}/archivos/dashboards/consulta`);
   }
 }

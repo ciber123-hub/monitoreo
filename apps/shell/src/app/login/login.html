@@ -13,7 +13,7 @@
           pInputText
           id="username"
           formControlName="username"
-          placeholder="email@example.com"
+          placeholder="email@ejemplo.com"
           class="w-full"
           [class.ng-invalid]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
           [class.ng-valid]="loginForm.get('username')?.valid && loginForm.get('username')?.touched"
@@ -24,7 +24,7 @@
         </div>
       </div>
    <div class="field">
-  <label for="password">Password</label>
+  <label for="password">Contraseña</label>
 
   <div class="password-field">
     <input
@@ -32,7 +32,7 @@
       [type]="showPassword ? 'text' : 'password'"
       id="password"
       formControlName="password"
-      placeholder="Password"
+      placeholder="Contraseña"
       class="w-full"
       [class.ng-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
       [class.ng-valid]="loginForm.get('password')?.valid && loginForm.get('password')?.touched"

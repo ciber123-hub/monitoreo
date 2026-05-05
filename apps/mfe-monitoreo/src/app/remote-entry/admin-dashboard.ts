@@ -16,7 +16,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { PrimeNG } from 'primeng/config';
 
 // Modelos y Servicios
-import { ReportData, EstadoConfig, FiltroRequest } from './models/report.model';
+import { ReportData, EstadoConfig, FiltroRequest, DashboardData } from './models/report.model';
 import { ReportService } from './services/report.service';
 
 import { ViewChild } from '@angular/core';
@@ -564,6 +564,148 @@ export class AdminDashboard implements OnInit {
           title: 'Regenerado',
           text: 'El archivo ha sido regenerado exitosamente',
           timer: 2000
+        });
+      }
+    });
+  }
+
+  /**
+   * Mostrar dashboard con datos del backend
+   */
+  onDashboard(): void {
+    this.isLoading.set(true);
+    
+    this.reportService.consultarDashboard().subscribe({
+      next: (dashboardData: DashboardData) => {
+        this.isLoading.set(false);
+        
+        // Construir HTML para el modal con tarjetas estilo dashboard
+        const htmlContent = `
+          <div class="dashboard-modal-content">
+            
+            <div class="dashboard-grid">
+              <div class="dashboard-card card-blue">
+                <div class="metric-number">${dashboardData.total}</div>
+                <div class="metric-text">
+                  <span class="metric-label">Archivos hoy</span>
+                </div>
+              </div>
+              <div class="dashboard-card card-red">
+                <div class="metric-number">${dashboardData.numeroErrores}</div>
+                <div class="metric-text">
+                  <span class="metric-label">Errores</span>
+                </div>
+              </div>
+              <div class="dashboard-card card-cyan">
+                <div class="metric-number">${dashboardData.numeroReenviados}</div>
+                <div class="metric-text">
+                  <span class="metric-label">Reenviados</span>
+                </div>
+              </div>
+              <div class="dashboard-card card-green">
+                <div class="metric-number">${dashboardData.numeroRegenerados}</div>
+                <div class="metric-text">
+                  <span class="metric-label">Regenerados</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        Swal.fire({
+          title: 'Dashboard',
+          html: htmlContent,
+          width: '560px',
+          confirmButtonText: 'Cerrar',
+          confirmButtonColor: '#2563eb',
+          didOpen: () => {
+            const container = Swal.getHtmlContainer();
+            if (container) {
+              const style = document.createElement('style');
+              style.textContent = `
+                .dashboard-modal-content {
+                  text-align: left;
+                  font-family: Inter, system-ui, sans-serif;
+                }
+                .dashboard-title {
+                  font-size: 1.1rem;
+                  font-weight: 700;
+                  color: #0f172a;
+                  margin-bottom: 18px;
+                }
+                .dashboard-grid {
+                  display: grid;
+                  gap: 12px;
+                  grid-template-columns: 1fr;
+                }
+                .dashboard-card {
+                  position: relative;
+                  display: flex;
+                  align-items: center;
+                  gap: 14px;
+                  padding: 18px 16px;
+                  border-radius: 16px;
+                  color: #ffffff;
+                  overflow: hidden;
+                }
+                .dashboard-card::after {
+                  content: '';
+                  position: absolute;
+                  right: -28px;
+                  top: 50%;
+                  transform: translateY(-50%) rotate(45deg);
+                  width: 52px;
+                  height: 52px;
+                  opacity: 0.18;
+                }
+                .card-blue { background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%); }
+                .card-blue::after { background: rgba(255, 255, 255, 0.18); }
+                .card-red { background: linear-gradient(135deg, #ef4444 0%, #f97316 100%); }
+                .card-red::after { background: rgba(255, 255, 255, 0.18); }
+                .card-cyan { background: linear-gradient(135deg, #06b6d4 0%, #22d3ee 100%); }
+                .card-cyan::after { background: rgba(255, 255, 255, 0.18); }
+                .card-green { background: linear-gradient(135deg, #14b8a6 0%, #34d399 100%); }
+                .card-green::after { background: rgba(255, 255, 255, 0.18); }
+                .metric-number {
+                  min-width: 56px;
+                  min-height: 56px;
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 1.25rem;
+                  font-weight: 700;
+                  background: rgba(255, 255, 255, 0.18);
+                  border-radius: 14px;
+                  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+                  z-index: 1;
+                }
+                .metric-text {
+                  display: flex;
+                  flex-direction: column;
+                  gap: 4px;
+                  z-index: 1;
+                }
+                .metric-label {
+                  font-size: 0.95rem;
+                  font-weight: 700;
+                  color: #ffffff;
+                }
+              `;
+              container.appendChild(style);
+            }
+          }
+        }).then(() => {
+          // Callback opcional
+        });
+      },
+      error: (error) => {
+        this.isLoading.set(false);
+        console.error('Error al consultar dashboard:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo cargar el dashboard desde el backend',
+          confirmButtonText: 'Aceptar'
         });
       }
     });

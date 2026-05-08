@@ -2,9 +2,8 @@ import { Component, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-admin-dashboard',
+  selector: 'app-nx-welcome',
   imports: [CommonModule],
-  templateUrl: './admin-dashboard.component.html',
   template: `
     <!--
      * * * * * * * * * * * * * * * * * * * * * * * * * * * *

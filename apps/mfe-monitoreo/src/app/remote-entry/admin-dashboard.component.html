@@ -74,12 +74,13 @@
     <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
       <button pButton type="button" label="Dashboard" icon="pi pi-chart-bar" class="p-button-info p-button-sm" pTooltip="Ver Dashboard" tooltipPosition="top" (click)="onDashboard()"></button>
       <div style="margin-left: auto;">
-        <button pButton type="button" icon="pi pi-file-excel" class="p-button-success p-button-sm" pTooltip="Exportar a Excel" tooltipPosition="top" (click)="exportToExcel()"></button>
+        <button *ngIf="searchExecuted() && filteredData().length > 0" pButton type="button" icon="pi pi-file-excel" class="p-button-success p-button-sm" pTooltip="Exportar a Excel" tooltipPosition="top" (click)="exportToExcel()"></button>
       </div>
     </div>
     
     <p-table 
       [value]="filteredData()" 
+      emptyMessage="Presiona Buscar para mostrar datos"
       [paginator]="true" 
       [rows]="5" 
       [rowsPerPageOptions]="[5, 10, 20]"

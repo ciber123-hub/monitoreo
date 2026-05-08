@@ -63,3 +63,14 @@ Thumbs.db
 
 # testing
 vitest.config.*.timestamp*
+
+# Build outputs | creados al lanzar comando de Docker
+dist/
+apps/dist/
+
+# Angular/Nx/Vite/etc | creados al lanzar comando de Docker
+**/dist/
+
+build-out.txt
+build-output.txt
+temp-rspack-load-test.js

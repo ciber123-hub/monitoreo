@@ -81,6 +81,7 @@ export class AdminDashboard implements OnInit {
   reportData = signal<ReportData[]>([]);
   filteredData = signal<ReportData[]>([]);
   isLoading = signal<boolean>(false);
+  searchExecuted = signal<boolean>(false);
 
   constructor(
     private fb: FormBuilder,
@@ -94,7 +95,6 @@ export class AdminDashboard implements OnInit {
 
   ngOnInit(): void {
     this._configurarIdioma();
-    this._cargarDatos();
   }
 
   /**
@@ -174,7 +174,9 @@ export class AdminDashboard implements OnInit {
    */
   onSearch(): void {
     this.isLoading.set(true);
-    
+    this.filteredData.set([]);
+    this.searchExecuted.set(false);
+
     const formValue = this.filterForm.value;
     const estadosSeleccionados = this.estadosList
       .filter((_, i) => formValue.estados[i])
@@ -207,6 +209,7 @@ export class AdminDashboard implements OnInit {
     this.reportService.consultarArchivosBackend(filtro).subscribe({
       next: (response) => {
         this.filteredData.set(response.datos);
+        this.searchExecuted.set(true);
         this.isLoading.set(false);
         console.log(`✓ Búsqueda completada: ${response.datos.length} registros encontrados`);
       },
@@ -216,6 +219,7 @@ export class AdminDashboard implements OnInit {
         this.reportService.buscar(filtro).subscribe({
           next: (response) => {
             this.filteredData.set(response.datos);
+            this.searchExecuted.set(true);
             this.isLoading.set(false);
             console.log(`✓ Búsqueda local: ${response.datos.length} registros encontrados`);
           },
@@ -239,8 +243,8 @@ export class AdminDashboard implements OnInit {
       archivos: this.archivosList.map(() => false)
     });
 
-    // Recarga todos los datos
-    this._cargarDatos();
+    this.filteredData.set([]);
+    this.searchExecuted.set(false);
   }
 
   /**

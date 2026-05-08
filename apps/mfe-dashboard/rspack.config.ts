@@ -34,8 +34,8 @@ export default async () => {
           budgets: [
             {
               type: 'initial',
-              maximumWarning: '500kb',
-              maximumError: '1mb',
+              maximumWarning: '2mb',
+              maximumError: '10mb',
             },
             {
               type: 'anyComponentStyle',

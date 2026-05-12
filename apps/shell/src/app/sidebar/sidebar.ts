@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import { jwtDecode } from 'jwt-decode';
+import { LoginService } from '../service/login.service';
 
 @Component({
   standalone: true,
@@ -14,28 +15,19 @@ import { jwtDecode } from 'jwt-decode';
 export class Sidebar {
   router = inject(Router);
 
-  constructor(private authService: MsalService) {}
+  constructor(private authService: MsalService, private loginService: LoginService) {}
 
   get currentUser() {
-    const accounts = this.authService.instance.getAllAccounts();
-    if (accounts.length > 0) {
-      const account = accounts[0];
-      const idToken = account.idToken;
-      if (idToken) {
-        try {
-          const decoded: any = jwtDecode(idToken);
-          return { mail: decoded.preferred_username || decoded.email || account.username };
-        } catch (e) {
-          return { mail: account.username };
-        }
-      }
-      return { mail: account.username };
-    }
-    return null;
+    return this.loginService.currentUser;
+  }
+
+  get isAdmin(): boolean {
+    const user = this.currentUser;
+    return user ? user.roles.includes('ADMIN') : false;
   }
 
   isAuthenticated(): boolean {
-    return this.authService.instance.getAllAccounts().length > 0;
+    return this.loginService.isAuthenticated();
   }
 
   navigateTo(route: string) {

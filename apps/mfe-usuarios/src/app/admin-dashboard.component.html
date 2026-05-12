@@ -2,11 +2,11 @@
   <div class="card card-admin">
 
     <div class="admin-header">
-      <h1 class="admin-title">Administración</h1>
+      <h1 class="admin-title">Administración de Usuarios</h1>
     </div>
 
     <div class="admin-section">
-      <div class="section-title">Usuario de Active Directory</div>
+     <!-- <div class="section-title">Usuario de Active Directory</div>
 
       <div class="user-input-group">
         <input
@@ -20,7 +20,7 @@
         <button class="btn-add" (click)="onAddUser()">
           +
         </button>
-      </div>
+      </div>-->
 
       <div class="users-table-wrapper">
         <table class="users-table">
@@ -49,7 +49,8 @@
         <td>
           <select class="profile-select"
                   [(ngModel)]="user.perfil"
-                  (change)="onUpdateUserProfile(user)">
+                  (change)="onUpdateUserProfile(user)"
+                  [disabled]="!user.activo">
             <option value="Soporte">Soporte</option>
             <option value="Admin">Admin</option>
             
@@ -57,14 +58,27 @@
         </td>
 
         <td>
-          <span class="status" [class.active]="user.activo" [class.inactive-status]="!user.activo">
-            <span class="dot"></span>
-            {{ user.activo ? 'Activo' : 'Inactivo' }}
-          </span>
+          <div class="status-toggle">
+            <p-toggleSwitch
+              [ngModel]="user.activo"
+              (onChange)="onToggleUserActive(user, $event.checked)"
+              onLabel="Activo"
+              offLabel="Inactivo"
+              onIcon="pi pi-check"
+              offIcon="pi pi-times"
+            ></p-toggleSwitch>
+          </div>
         </td>
 
         <td class="actions">
-          <button class="btn-delete" (click)="onDeleteUser(user)">
+          <button
+            class="btn-delete"
+            (click)="onDeleteUser(user)"
+            [disabled]="!user.activo"
+            pTooltip="Eliminar"
+            tooltipPosition="top"
+            type="button"
+          >
             🗑
           </button>
         </td>

@@ -1,20 +1,20 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { TooltipModule } from 'primeng/tooltip';
+import { UserService } from './services/user.service';
+import { User } from './models/user.model';
 import Swal from 'sweetalert2';
 
-interface User {
-  id: string;
-  usuario: string;
-  perfil: 'Soporte' | 'Admin' | 'Usuario';
-  activo: boolean;
-  fechaAgregado: Date;
+interface UserRow extends User {
+  // Mantiene estructura de tabla interna si es necesario
 }
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ToggleSwitchModule, TooltipModule],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss']
 })
@@ -23,12 +23,22 @@ export class AdminDashboard implements OnInit {
   usersList = signal<User[]>([]);
   newUserSearch = '';
 
+  constructor(private userService: UserService) {}
+
   ngOnInit(): void {
-    this.usersList.set([
-      { id: '1', usuario: 'rlopez', perfil: 'Soporte', activo: false, fechaAgregado: new Date() },
-      { id: '2', usuario: 'ovazquez', perfil: 'Admin', activo: true, fechaAgregado: new Date() },
-      { id: '3', usuario: 'rcruz', perfil: 'Soporte', activo: true, fechaAgregado: new Date() }
-    ]);
+    this.userService.getUsers().subscribe({
+      next: (users) => {
+        this.usersList.set(users);
+      },
+      error: (error) => {
+        console.error('Error cargando usuarios', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudieron cargar los usuarios. Intente nuevamente más tarde.'
+        });
+      }
+    });
   }
 
   onAddUser(): void {
@@ -38,11 +48,14 @@ export class AdminDashboard implements OnInit {
     this.usersList.update(list => [
       ...list,
       {
-        id: Date.now().toString(),
+        id: Date.now(),
         usuario: user,
         perfil: 'Usuario',
         activo: true,
-        fechaAgregado: new Date()
+        email: '',
+        azureOid: '',
+        roles: [],
+        groups: []
       }
     ]);
 
@@ -52,6 +65,12 @@ export class AdminDashboard implements OnInit {
   onUpdateUserProfile(user: User): void {
     this.usersList.update(list =>
       list.map(u => u.id === user.id ? user : u)
+    );
+  }
+
+  onToggleUserActive(user: User, activo: boolean): void {
+    this.usersList.update(list =>
+      list.map(u => u.id === user.id ? { ...u, activo } : u)
     );
   }
 

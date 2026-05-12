@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import { jwtDecode } from 'jwt-decode';
+import { LoginService } from '../service/login.service';
 
 @Component({
   standalone: true,
@@ -18,29 +19,16 @@ export class Header {
 
   constructor(
     private authService: MsalService,
-    private router: Router
+    private router: Router,
+    private loginService: LoginService
   ) {}
 
   get currentUser() {
-    const accounts = this.authService.instance.getAllAccounts();
-    if (accounts.length > 0) {
-      const account = accounts[0];
-      const idToken = account.idToken;
-      if (idToken) {
-        try {
-          const decoded: any = jwtDecode(idToken);
-          return { mail: decoded.preferred_username || decoded.email || account.username };
-        } catch (e) {
-          return { mail: account.username };
-        }
-      }
-      return { mail: account.username };
-    }
-    return null;
+    return this.loginService.currentUser;
   }
 
   isAuthenticated(): boolean {
-    return this.authService.instance.getAllAccounts().length > 0;
+    return this.loginService.isAuthenticated();
   }
 
   toggleMenu() {

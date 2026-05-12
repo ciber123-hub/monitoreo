@@ -19,7 +19,7 @@
           <span class="label">Catálogos</span>
         </a>
       </li>
-      <li class="menu-item">
+      <li class="menu-item" *ngIf="isAdmin">
         <a (click)="navigateTo('/mfUsuarios')" [class.active]="router.url === '/mfUsuarios'">
           <span class="icon">👥</span>
           <span class="label">Usuarios</span>

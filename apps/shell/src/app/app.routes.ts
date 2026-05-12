@@ -4,6 +4,7 @@ import { Home } from './home/home';
 import { Layout } from './layout/layout';
 import { AuthGuard } from './core/auth.guard';
 import { LoginGuard } from './core/login.guard';
+import { RoleGuard } from './core/role.guard';
 
 export const appRoutes: Route[] = [
   {
@@ -35,6 +36,7 @@ export const appRoutes: Route[] = [
         path: 'mfUsuarios',
         loadChildren: () =>
           import('mfUsuarios/Routes').then((m) => m.remoteRoutes),
+        canActivate: [RoleGuard],
       },
       {
         path: 'mfCatalogos',

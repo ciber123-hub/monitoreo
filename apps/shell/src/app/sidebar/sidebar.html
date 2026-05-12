@@ -8,19 +8,19 @@
         </a>
       </li>-->
       <li class="menu-item">
-        <a routerLink="/mfMonitoreo" routerLinkActive="active">
+        <a (click)="navigateTo('/mfMonitoreo')" [class.active]="router.url === '/mfMonitoreo'">
           <span class="icon">📊</span>
           <span class="label">Monitoreo</span>
         </a>
       </li>
       <li class="menu-item">
-        <a routerLink="/mfCatalogos" routerLinkActive="active">
+        <a (click)="navigateTo('/mfCatalogos')" [class.active]="router.url === '/mfCatalogos'">
           <span class="icon">📚</span>
           <span class="label">Catálogos</span>
         </a>
       </li>
       <li class="menu-item">
-        <a routerLink="/mfUsuarios" routerLinkActive="active">
+        <a (click)="navigateTo('/mfUsuarios')" [class.active]="router.url === '/mfUsuarios'">
           <span class="icon">👥</span>
           <span class="label">Usuarios</span>
         </a>
@@ -33,4 +33,6 @@
       </li>-->
     </ul>
   </nav>
+
+ 
 </aside>

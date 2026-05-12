@@ -5,6 +5,7 @@ import { Sidebar } from '../sidebar/sidebar';
 import { Footer } from '../footer/footer';
 
 @Component({
+  standalone: true,
   selector: 'app-layout',
   imports: [RouterModule, Header, Sidebar, Footer],
   templateUrl: './layout.html',

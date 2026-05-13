@@ -13,8 +13,8 @@ export interface AuthLoginResponse {
 export interface User {
   id: number;
   name: string;
-  email: string;
+  email: string | null;
   status: number;
   roles: string[];
-  groups: string[];
+  groups: string[] | null;
 }

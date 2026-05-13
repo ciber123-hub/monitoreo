@@ -36,6 +36,14 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   canActivate(): Observable<boolean> {
+    if (sessionStorage.getItem('unauthorized') === 'true') {
+      this.router.navigate(['/login'], {
+        replaceUrl: true,
+        queryParams: { error: 'unauthorized' }
+      });
+      return of(false);
+    }
+
     return from(this.msalInit.initialize()).pipe(
       switchMap(() => {
         const accounts = this.authService.instance.getAllAccounts();
@@ -47,8 +55,16 @@ export class AuthGuard implements CanActivate {
         this.router.navigate(['/login'], { replaceUrl: true });
         return of(false);
       }),
-      catchError(() => {
-        this.router.navigate(['/login'], { replaceUrl: true });
+      catchError((error) => {
+        if (error instanceof Error && error.message === 'USER_NOT_AUTHORIZED') {
+          sessionStorage.setItem('unauthorized', 'true');
+          this.router.navigate(['/login'], { 
+            replaceUrl: true, 
+            queryParams: { error: 'unauthorized' } 
+          });
+        } else {
+          this.router.navigate(['/login'], { replaceUrl: true });
+        }
         return of(false);
       }),
       take(1)

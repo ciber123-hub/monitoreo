@@ -264,3 +264,97 @@ form {
   display: none; /* Hide default PrimeNG toggle since we have custom one */
 }
 
+// Unauthorized Dialog Styles
+:host ::ng-deep .unauthorized-dialog .p-dialog-header {
+  background: linear-gradient(135deg, #611232 0%, #7f1d6f 100%);
+  color: white;
+  border-bottom: none;
+  padding: 0.875rem 1rem;
+  border-radius: 12px 12px 0 0;
+}
+
+:host ::ng-deep .unauthorized-dialog .p-dialog-header .p-dialog-title {
+  font-weight: 300;
+  font-size: 1rem;
+  margin: 0;
+}
+
+:host ::ng-deep .unauthorized-dialog .p-dialog-content {
+  padding: 1rem;
+  text-align: center;
+  border-radius: 0;
+}
+
+:host ::ng-deep .unauthorized-dialog .p-dialog-footer {
+  padding: 0.625rem 1rem;
+  border-top: 1px solid #e1e8f0;
+  text-align: center;
+  border-radius: 0 0 12px 12px;
+  background: #f8fafc;
+}
+
+:host ::ng-deep .unauthorized-dialog .p-button {
+  background: linear-gradient(135deg, #611232 0%, #7f1d6f 100%) !important;
+  border: none !important;
+  padding: 0.625rem 1.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  min-width: 100px;
+}
+
+:host ::ng-deep .unauthorized-dialog .p-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(97, 24, 84, 0.3) !important;
+}
+
+:host ::ng-deep .unauthorized-dialog .p-button:focus {
+  box-shadow: 0 0 0 3px rgba(97, 24, 84, 0.2) !important;
+}
+
+// Custom dialog content styles
+:host ::ng-deep .unauthorized-dialog .dialog-content {
+  
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+:host ::ng-deep .unauthorized-dialog .warning-icon {
+  font-size: 3rem;
+  color: #f59e0b;
+  margin-bottom: 0.5rem;
+}
+
+:host ::ng-deep .unauthorized-dialog .warning-icon .pi {
+  filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3));
+}
+
+:host ::ng-deep .unauthorized-dialog .message-text {
+  color: #374151;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+:host ::ng-deep .unauthorized-dialog .message-text p {
+  margin: 0.25rem 0;
+}
+
+:host ::ng-deep .unauthorized-dialog .message-text p:first-child {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+// Dialog overlay and positioning
+:host ::ng-deep .unauthorized-dialog .p-dialog {
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  border: none;
+}
+
+:host ::ng-deep .unauthorized-dialog .p-dialog-mask {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+}
+

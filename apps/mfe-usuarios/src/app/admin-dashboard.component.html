@@ -6,87 +6,123 @@
     </div>
 
     <div class="admin-section">
-     <!-- <div class="section-title">Usuario de Active Directory</div>
+     <div class="section-title">Agregar Usuario</div>
 
-      <div class="user-input-group">
-        <input
-          type="text"
-          class="user-input"
-          
-          [(ngModel)]="newUserSearch"
-          (keyup.enter)="onAddUser()"
-        />
+      <div class="user-form-card">
+        <div class="form-row form-row-actions">
+          <label>
+            Nombre
+            <input
+              type="text"
+              class="user-input"
+              [(ngModel)]="newUserForm.name"
+              placeholder="Nombre"
+            />
+          </label>
 
-        <button class="btn-add" (click)="onAddUser()">
-          +
-        </button>
-      </div>-->
+          <label>
+            Email
+            <input
+              type="email"
+              class="user-input"
+              [(ngModel)]="newUserForm.email"
+              placeholder="correo@dominio.com"
+            />
+          </label>
+
+          <div class="form-actions">
+            <button class="btn-create" type="button" (click)="onCreateUser()" title="Crear usuario" aria-label="Crear usuario">
+              +
+            </button>
+          </div>
+        </div>
+
+        <!--<div class="form-row">
+          <label>
+            Roles
+            <select class="user-input" [(ngModel)]="newUserForm.roles">
+              <option value="ADMIN">ADMIN</option>
+              <option value="SUPPORT">SUPPORT</option>
+            </select>
+          </label>
+
+          <label>
+            Grupos
+            <select class="user-input" [(ngModel)]="newUserForm.groups">
+              <option value="GRUPO1">GRUPO1</option>
+              <option value="GRUPO2">GRUPO2</option>
+            </select>
+          </label>
+        </div>-->
+      </div>
 
       <div class="users-table-wrapper">
-        <table class="users-table">
+        <p-table
+          [value]="usersList()"
+          [paginator]="true"
+          [rows]="5"
+          [rowsPerPageOptions]="[5, 10, 20]"
+          [pageLinks]="3"
+          styleClass="users-table"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Usuario</th>
+              <th>Perfil</th>
+              <th>Estado</th>
+              <th class="actions-col">Acciones</th>
+            </tr>
+          </ng-template>
 
-    <thead>
-      <tr>
-        <th>Usuario</th>
-        <th>Perfil</th>
-        <th>Estado</th>
-        <th class="actions-col">Acciones</th>
-      </tr>
-    </thead>
+          <ng-template pTemplate="body" let-user>
+            <tr [class.inactive]="!user.activo">
+              <td class="user-cell">
+                <div class="user-info">
+               
+                  <span>{{ user.usuario }}</span>
+                </div>
+              </td>
 
-    <tbody>
-      <tr *ngFor="let user of usersList()" [class.inactive]="!user.activo">
-
-        <td class="user-cell">
-          <div class="user-info">
-            <div class="avatar">
-              {{ user.usuario.charAt(0).toUpperCase() }}
-            </div>
-            <span>{{ user.usuario }}</span>
-          </div>
-        </td>
-
-        <td>
-          <select class="profile-select"
+              <td>
+                <select
+                  class="profile-select"
                   [(ngModel)]="user.perfil"
-                  (change)="onUpdateUserProfile(user)"
-                  [disabled]="!user.activo">
-            <option value="Soporte">Soporte</option>
-            <option value="Admin">Admin</option>
-            
-          </select>
-        </td>
+                  (ngModelChange)="onUpdateUserProfile(user, $event)"
+                  [disabled]="!user.activo"
+                >
+                  <option value="Soporte">Soporte</option>
+                  <option value="Admin">Admin</option>
+                </select>
+              </td>
 
-        <td>
-          <div class="status-toggle">
-            <p-toggleSwitch
-              [ngModel]="user.activo"
-              (onChange)="onToggleUserActive(user, $event.checked)"
-              onLabel="Activo"
-              offLabel="Inactivo"
-              onIcon="pi pi-check"
-              offIcon="pi pi-times"
-            ></p-toggleSwitch>
-          </div>
-        </td>
+              <td>
+                <div class="status-toggle">
+                  <p-toggleSwitch
+                    [ngModel]="user.activo"
+                    (onChange)="onToggleUserActive(user, $event.checked)"
+                    onLabel="Activo"
+                    offLabel="Inactivo"
+                    onIcon="pi pi-check"
+                    offIcon="pi pi-times"
+                  ></p-toggleSwitch>
+                </div>
+              </td>
 
-        <td class="actions">
-          <button
-            class="btn-delete"
-            (click)="onDeleteUser(user)"
-            [disabled]="!user.activo"
-            pTooltip="Eliminar"
-            tooltipPosition="top"
-            type="button"
-          >
-            🗑
-          </button>
-        </td>
-
-      </tr>
-    </tbody>
-
-  </table>
+              <td class="actions">
+                <button
+                  class="btn-delete"
+                  (click)="onDeleteUser(user)"
+                  [disabled]="!user.activo"
+                  pTooltip="Eliminar"
+                  tooltipPosition="top"
+                  type="button"
+                >
+                  🗑
+                </button>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
 
         <div *ngIf="usersList().length === 0" class="no-data">
           No hay usuarios registrados

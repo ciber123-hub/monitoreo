@@ -62,6 +62,7 @@ export class AdminDashboard implements OnInit {
   // Upload signals
   selectedFile = signal<File | null>(null);
   isDragOver = signal<boolean>(false);
+  isCancelButtonDisabled = signal<boolean>(true);
   selectedCatalog: string | null = null;
 
   // Datos de respuesta del servicio
@@ -533,6 +534,9 @@ export class AdminDashboard implements OnInit {
     const files = event.dataTransfer?.files;
     if (files && files.length > 0) {
       const accepted = this._processFile(files[0]);
+      if (accepted) {
+        this.isCancelButtonDisabled.set(false);
+      }
       if (accepted && this.selectedCatalog) {
         this.onUploadFile();
       }
@@ -542,7 +546,10 @@ export class AdminDashboard implements OnInit {
   onFileSelected(event: any): void {
     const files = event.target.files;
     if (files && files.length > 0) {
-      this._processFile(files[0]);
+      const isValid = this._processFile(files[0]);
+      if (isValid) {
+        this.isCancelButtonDisabled.set(false);
+      }
     }
   }
 
@@ -577,6 +584,7 @@ export class AdminDashboard implements OnInit {
     }
 
     this.selectedFile.set(file);
+    this.uploadResponse.set(null);
     return true;
   }
 
@@ -632,6 +640,7 @@ export class AdminDashboard implements OnInit {
           confirmButtonText: 'Aceptar',
           confirmButtonColor: allSuccessful ? '#10b981' : '#f59e0b'
         }).then(() => {
+          this.isCancelButtonDisabled.set(true);
           this._resetUploadForm();
         });
       },
@@ -715,6 +724,7 @@ export class AdminDashboard implements OnInit {
   private _resetUploadForm(): void {
     this.selectedFile.set(null);
     this.selectedCatalog = null;
+    this.isCancelButtonDisabled.set(true);
     if (this.fileInput) {
       this.fileInput.nativeElement.value = '';
     }

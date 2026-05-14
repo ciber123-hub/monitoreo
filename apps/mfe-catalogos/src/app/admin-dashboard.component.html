@@ -9,11 +9,12 @@
 
         <!-- Selector de catálogo -->
         <div class="catalog-selector-group">
+          <label class="selector-label" for="catalogSelect">Selecciona un catálogo</label>
           <select 
             id="catalogSelect"
             [(ngModel)]="selectedCatalog"
             class="catalog-select">
-            <option [value]="null">Lista de catálogos</option>
+            <option [value]="null" disabled selected>📋 Lista de catálogos</option>
             <option *ngFor="let catalog of catalogosList" [value]="catalog.id">
               {{ catalog.name }}
             </option>
@@ -69,6 +70,7 @@
             label="Cancelar" 
             icon="pi pi-times"
             class="p-button-secondary cancel-btn"
+            [disabled]="isCancelButtonDisabled()"
             (click)="onCancel()">
           </button>
         </div>

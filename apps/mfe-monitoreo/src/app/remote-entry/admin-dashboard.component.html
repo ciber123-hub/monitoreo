@@ -4,6 +4,14 @@
     
     
      <form [formGroup]="filterForm" class="filters-form">
+      <!-- MENSAJE DE ERROR DE VALIDACIÓN -->
+      <div *ngIf="filterForm.hasError('rangoFechasInvalido') && (filterForm.get('fechaDesde')?.value || filterForm.get('fechaHasta')?.value)" 
+           class="error-message" 
+           style="background-color: #fee2e2; border: 1px solid #fecaca; color: #b91c1c; padding: 12px; border-radius: 6px; margin-bottom: 16px;">
+        <i class="pi pi-exclamation-circle" style="margin-right: 8px;"></i>
+        <span>La fecha "Desde" no puede ser mayor que la fecha "Hasta"</span>
+      </div>
+
       <div class="filters-centered-row">
         <!-- FECHAS Y ESTADO (juntos) -->
         <div class="filters-fechas-estado-group">
@@ -63,8 +71,8 @@
       </div>
 
       <div class="filter-actions">
-        <button pButton type="button" label="Buscar" icon="pi pi-search" class="p-button-primary" (click)="onSearch()" [loading]="isLoading()"></button>
-        <button pButton type="button" label="Limpiar" icon="pi pi-times" class="p-button-secondary" (click)="onClear()"></button>
+        <button pButton type="button" label="Buscar" icon="pi pi-search" class="p-button-primary" (click)="onSearch()" [loading]="isLoading()" [disabled]="filterForm.invalid"></button>
+        <button pButton type="button" label="Limpiar" icon="pi pi-times" class="p-button-secondary" (click)="onClear()" [disabled]="!hasFilters()"></button>
       </div>
     </form>
   </div>
@@ -80,7 +88,6 @@
     
     <p-table 
       [value]="filteredData()" 
-      emptyMessage="Presiona Buscar para mostrar datos"
       [paginator]="true" 
       [rows]="5" 
       [rowsPerPageOptions]="[5, 10, 20]"
@@ -124,6 +131,21 @@
 
 
           
+        </tr>
+      </ng-template>
+
+      <!-- Template para mensaje vacío dentro de la tabla -->
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td [attr.colspan]="4" style="padding: 3rem 2rem; text-align: center; color: #6b7280;">
+            <div style="display: flex; justify-content: center; align-items: center; height: 100%; flex-direction: column;">
+              <p style="margin: 0; font-size: 1rem;">
+                <span *ngIf="!searchExecuted()">Presiona Buscar para mostrar datos</span>
+                <span *ngIf="searchExecuted() && !hasFiltersApplied()">No hay archivos generados hoy</span>
+                <span *ngIf="searchExecuted() && hasFiltersApplied()">No se encontraron registros</span>
+              </p>
+            </div>
+          </td>
         </tr>
       </ng-template>
     </p-table>

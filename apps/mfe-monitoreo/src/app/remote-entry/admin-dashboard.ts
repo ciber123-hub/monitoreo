@@ -1,6 +1,6 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, FormArray, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
@@ -48,6 +48,30 @@ export class AdminDashboard implements OnInit {
   @ViewChild('dpDesde') dpDesde!: DatePicker;
   @ViewChild('dpHasta') dpHasta!: DatePicker;
 
+  /**
+   * Validador personalizado que verifica que fechaDesde no sea mayor que fechaHasta
+   */
+  static validarRangoFechas(control: AbstractControl): ValidationErrors | null {
+    const fechaDesde = control.get('fechaDesde')?.value;
+    const fechaHasta = control.get('fechaHasta')?.value;
+
+    // Si no hay ambas fechas, no hay error
+    if (!fechaDesde || !fechaHasta) {
+      return null;
+    }
+
+    // Convertir a Date si es string
+    const desde = new Date(fechaDesde);
+    const hasta = new Date(fechaHasta);
+
+    // Validar que fechaDesde no sea mayor que fechaHasta
+    if (desde > hasta) {
+      return { rangoFechasInvalido: true };
+    }
+
+    return null;
+  }
+
   onOpenDesde() {
     if (this.dpHasta?.overlayVisible) {
       setTimeout(() => {
@@ -82,6 +106,36 @@ export class AdminDashboard implements OnInit {
   filteredData = signal<ReportData[]>([]);
   isLoading = signal<boolean>(false);
   searchExecuted = signal<boolean>(false);
+  hasFiltersApplied = signal<boolean>(false);
+  formValueSignal = signal<any>({});
+
+  /**
+   * Computed signal que detecta si hay filtros seleccionados
+   */
+  hasFilters = computed(() => {
+    const formValue = this.formValueSignal();
+
+    // Verificar si hay fechas seleccionadas
+    if (formValue.fechaDesde || formValue.fechaHasta) {
+      return true;
+    }
+
+    // Verificar si hay estados seleccionados
+    if (formValue.estados && Array.isArray(formValue.estados)) {
+      if (formValue.estados.some((estado: boolean) => estado === true)) {
+        return true;
+      }
+    }
+
+    // Verificar si hay archivos seleccionados
+    if (formValue.archivos && Array.isArray(formValue.archivos)) {
+      if (formValue.archivos.some((archivo: boolean) => archivo === true)) {
+        return true;
+      }
+    }
+
+    return false;
+  });
 
   constructor(
     private fb: FormBuilder,
@@ -95,6 +149,12 @@ export class AdminDashboard implements OnInit {
 
   ngOnInit(): void {
     this._configurarIdioma();
+    // Monitorear cambios del formulario para habilitar/deshabilitar botón Limpiar
+    this.filterForm.valueChanges.subscribe((value) => {
+      this.formValueSignal.set(value);
+    });
+    // Establecer valor inicial
+    this.formValueSignal.set(this.filterForm.value);
   }
 
   /**
@@ -133,7 +193,7 @@ export class AdminDashboard implements OnInit {
     this.reportService.consultarArchivosBackend(filtroVacio).subscribe({
       next: (response) => {
         this.reportData.set(response.datos);
-        this.filteredData.set(response.datos);
+        this.filteredData.set(this.ordenarPorFechaDescendente(response.datos));
         this.isLoading.set(false);
         console.log('✓ Datos cargados desde el backend');
       },
@@ -143,7 +203,7 @@ export class AdminDashboard implements OnInit {
         this.reportService.obtenerTodos().subscribe({
           next: (datos) => {
             this.reportData.set(datos);
-            this.filteredData.set(datos);
+            this.filteredData.set(this.ordenarPorFechaDescendente(datos));
             this.isLoading.set(false);
             console.log('✓ Usando datos de demostración (dummy data)');
           },
@@ -165,7 +225,7 @@ export class AdminDashboard implements OnInit {
       fechaHasta: [null],
       estados: this.fb.array(this.estadosList.map(() => false)),
       archivos: this.fb.array(this.archivosList.map(() => false))
-    });
+    }, { validators: AdminDashboard.validarRangoFechas });
   }
 
   /**
@@ -173,6 +233,17 @@ export class AdminDashboard implements OnInit {
    * Intenta conectar al backend, si falla usa datos dummy
    */
   onSearch(): void {
+    // Validar que el formulario sea válido
+    if (this.filterForm.invalid) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Validación de Filtros',
+        text: 'La fecha "Desde" no puede ser mayor que la fecha "Hasta"',
+        confirmButtonColor: '#3085d6'
+      });
+      return;
+    }
+
     this.isLoading.set(true);
     this.filteredData.set([]);
     this.searchExecuted.set(false);
@@ -205,10 +276,21 @@ export class AdminDashboard implements OnInit {
       archivos: archivosSeleccionados.length > 0 ? (archivosSeleccionados as any) : undefined
     };
 
+    // Detectar si hay filtros seleccionados
+    const hayFiltros = !!fechaDesde || !!fechaHasta || estadosSeleccionados.length > 0 || archivosSeleccionados.length > 0;
+    
+    // Establecer si hay filtros aplicados para mostrar el mensaje correcto
+    this.hasFiltersApplied.set(hayFiltros);
+
     // Intenta con backend primero
     this.reportService.consultarArchivosBackend(filtro).subscribe({
       next: (response) => {
-        this.filteredData.set(response.datos);
+        let datosFinales = this.ordenarPorFechaDescendente(response.datos);
+        // Si no hay filtros, mostrar solo los registros del día
+        if (!hayFiltros) {
+          datosFinales = this.filtrarPorHoy(datosFinales);
+        }
+        this.filteredData.set(datosFinales);
         this.searchExecuted.set(true);
         this.isLoading.set(false);
         console.log(`✓ Búsqueda completada: ${response.datos.length} registros encontrados`);
@@ -218,7 +300,12 @@ export class AdminDashboard implements OnInit {
         // Si falla el backend, filtra datos locales (dummy)
         this.reportService.buscar(filtro).subscribe({
           next: (response) => {
-            this.filteredData.set(response.datos);
+            let datosFinales = this.ordenarPorFechaDescendente(response.datos);
+            // Si no hay filtros, mostrar solo los registros del día
+            if (!hayFiltros) {
+              datosFinales = this.filtrarPorHoy(datosFinales);
+            }
+            this.filteredData.set(datosFinales);
             this.searchExecuted.set(true);
             this.isLoading.set(false);
             console.log(`✓ Búsqueda local: ${response.datos.length} registros encontrados`);
@@ -245,6 +332,44 @@ export class AdminDashboard implements OnInit {
 
     this.filteredData.set([]);
     this.searchExecuted.set(false);
+    this.hasFiltersApplied.set(false);
+  }
+
+  /**
+   * Ordena los datos por fecha en forma descendente (más reciente al inicio)
+   */
+  private ordenarPorFechaDescendente(datos: ReportData[]): ReportData[] {
+    return [...datos].sort((a, b) => {
+      // Parsear las fechas desde el formato DD/MM/YYYY HH:MM
+      const parseDate = (dateStr: string): Date => {
+        const [datePart, timePart] = dateStr.split(' ');
+        const [day, month, year] = datePart.split('/');
+        const [hours, minutes] = timePart.split(':');
+        return new Date(Number(year), Number(month) - 1, Number(day), Number(hours), Number(minutes));
+      };
+
+      const dateA = parseDate(a.fechaHora);
+      const dateB = parseDate(b.fechaHora);
+
+      // Ordenar descendente (más reciente primero)
+      return dateB.getTime() - dateA.getTime();
+    });
+  }
+
+  /**
+   * Filtra los datos para obtener solo los registros del día actual
+   */
+  private filtrarPorHoy(datos: ReportData[]): ReportData[] {
+    const hoy = new Date();
+    const diaHoy = String(hoy.getDate()).padStart(2, '0');
+    const mesHoy = String(hoy.getMonth() + 1).padStart(2, '0');
+    const anioHoy = hoy.getFullYear();
+    const fechaHoyFormato = `${diaHoy}/${mesHoy}/${anioHoy}`;
+
+    return datos.filter(item => {
+      const fechaParte = item.fechaHora.split(' ')[0]; // Obtener solo la fecha (DD/MM/YYYY)
+      return fechaParte === fechaHoyFormato;
+    });
   }
 
   /**
@@ -335,9 +460,9 @@ export class AdminDashboard implements OnInit {
   showDetailModal(report: ReportData): void {
     if (!report) return;
 
-    // Construir la línea de tiempo en HTML
+    // Construir la línea de tiempo en HTML (ordenada descendentemente - más reciente primero)
     const timelineHtml = report.timeline
-      ? report.timeline.map(item => `
+      ? report.timeline.reverse().map(item => `
           <div class="timeline-item">
             <div class="timeline-marker">
               <span class="timeline-dot"></span>
@@ -365,10 +490,10 @@ export class AdminDashboard implements OnInit {
           <span class="detail-value">API - ${tipoDescripcion}</span>
         </div>
 
-        <div class="detail-row">
+        <!--<div class="detail-row">
           <span class="detail-label">Estado backend:</span>
           <span class="detail-value">${report.backendStatusDescription || this.getEstadoLabel(report)}</span>
-        </div>
+        </div>-->
 
         <div class="detail-section">
           <span class="detail-label">Línea de tiempo</span>
@@ -504,6 +629,7 @@ export class AdminDashboard implements OnInit {
       }
     ];
 
+    // Crear hoja principal con datos del reporte
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Detalle');
@@ -514,6 +640,22 @@ export class AdminDashboard implements OnInit {
       { wch: 20 },
       { wch: 20 }
     ];
+
+    // Agregar hoja con línea de tiempo si existe
+    if (report.timeline && report.timeline.length > 0) {
+      const timelineData = report.timeline.map(item => ({
+        'Fecha/Hora': item.fechaHora,
+        'Descripción': item.descripcion || ''
+      }));
+
+      const wsTimeline = XLSX.utils.json_to_sheet(timelineData);
+      XLSX.utils.book_append_sheet(wb, wsTimeline, 'Línea de Tiempo');
+
+      wsTimeline['!cols'] = [
+        { wch: 18 },
+        { wch: 50 }
+      ];
+    }
 
     XLSX.writeFile(wb, `Reporte_Detalle_${report.id}_${new Date().toISOString().split('T')[0]}.xlsx`);
     
